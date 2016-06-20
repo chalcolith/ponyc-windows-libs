@@ -17,7 +17,7 @@ set PCRE2_BUILD=%PCRE2%.build
 if not exist %PCRE2_SRC% wget ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%PCRE2_SRC%
 if errorlevel 1 goto error
 
-gunzip --stdout %PCRE2_SRC% | tar xf -
+gzip --decompress --stdout %PCRE2_SRC% | tar xf -
 if errorlevel 1 goto error
 
 if not exist %PCRE2_BUILD% mkdir %PCRE2_BUILD%
