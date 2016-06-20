@@ -1,5 +1,5 @@
 @echo off
-echo This script requires GnuWin32, CMake, and 7-zip in your PATH.
+echo This script requires GnuWin32 and CMake in your PATH.
 
 if not exist lib mkdir lib
 
