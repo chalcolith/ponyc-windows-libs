@@ -10,7 +10,7 @@ pushd src
 if exist ..\lib\pcre2-8.lib goto ssl
 echo ------------------------- PCRE2 -------------------------
 :pcre2
-set PCRE2=pcre2-10.20
+set PCRE2=pcre2-10.21
 set PCRE2_SRC=%PCRE2%.tar.gz
 set PCRE2_BUILD=%PCRE2%.build
 
