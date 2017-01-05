@@ -1,5 +1,0 @@
-The libraries contained herein are from the following sources, and are released under their respective licenses:
-
-PCRE2-8.LIB: http://www.pcre.org/
-LIBSSL-32.*: https://github.com/libressl-portable/portable
-LIBCRYPTO-32.*: https://github.com/libressl-portable/portable
