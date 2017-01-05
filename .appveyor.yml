@@ -1,5 +1,9 @@
 version: {build}
 
+image: Visual Studio 2015
+
+build: off
+
 branches:
   only:
     - waf_build
