@@ -8,6 +8,8 @@ branches:
   only:
     - waf_build
 
+skip_non_tags: true
+
 environment:
   pcre2: "10.21"
   ssl: "2.5.0"
@@ -113,8 +115,18 @@ install:
 
       cd $workingDir
 
-      $ponyWinLibs = "PonyWindowsLibs-LLVM-${llvm}-LibreSSL-${ssl}-PCRE2-${pcre2}.zip"
+      $tag = $Env.APPVEYOR_REPO_TAG
+      $ponyWinLibs = "PonyWindowsLibs-LLVM-${llvm}-LibreSSL-${ssl}-PCRE2-${pcre2}-${tag}.zip"
       7z a -y -tzip $ponyWinLibs $libDir
 
 artifacts:
   - path: 'PonyWindowsLibs*.zip'
+
+deploy:
+  - provider: GitHub
+    artifact: /PonyWindowsLibs.*\.zip/
+    draft: false
+    prerelease: false
+    on:
+      branch: waf_build
+      appveyor_repo_tag: true
