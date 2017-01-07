@@ -124,7 +124,7 @@ artifacts:
 
 deploy:
   - provider: GitHub
-    description: Windows libraries for building the Pony compiler
+    description: Windows libraries for building the Pony compiler and standard library
     auth_token:
       secure: VWcomibzQA0AdttM8KDjvBTfHIoxXkLCzuoWzlV3om8bDO4CpUfu88Q7DltN710l
     artifact: /PonyWindowsLibs.*\.zip/
