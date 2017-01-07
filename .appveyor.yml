@@ -45,8 +45,8 @@ install:
           $llvmTar = "${srcDir}\LLVM-${llvm}.tar"
           $llvmZip = "$llvmTar.xz"
           if (-not (Test-Path $llvmZip)) { wget "http://llvm.org/releases/${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
-          7z x $llvmZip "-o$srcDir"
-          7z x $llvmTar "-o$srcDir"
+          7z x -y $llvmZip "-o$srcDir"
+          7z x -y $llvmTar "-o$srcDir"
         }
 
         Write-Output "Building LLVM $llvm"
@@ -59,14 +59,28 @@ install:
       cd $workingDir
 
       # LibreSSL
-      $sslLibDir = "${libDir}\libressl-${ssl}-windows"
+      $sslLibDir = "${libDir}\libressl-${ssl}"
 
       if (-not (Test-Path $sslLibDir))
       {
-        Write-Output "Obtaining LibreSSL $ssl"
-        $sslZip = "${srcDir}\libressl-${ssl}-windows-zip"
-        if (-not (Test-Path $sslZip)) { wget "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${ssl}-windows.zip" -OutFile $sslZip }
-        unzip -o $sslZip -d $libDir
+        $sslSrc = "${srcDir}\libressl-${ssl}"
+        $sslBuild = "${srcDir}\libressl-${ssl}.build"
+
+        if (-not (Test-Path $sslSrc))
+        {
+          Write-Output "Obtaining LibreSSL ${ssl}"
+          $sslZip = "${srcDir}\libressl-${ssl}.tar.gz"
+          if (-not (Test-Path $sslZip)) { wget "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${ssl}.tar.gz" -OutFile $sslZip }
+          7z x -y $sslZip "-o$srcDir"
+          7z x -y "${srcDir}\libressl-${ssl}.tar" "-o$srcDir"
+        }
+
+        Write-Output "Building LibreSSL $ssl"
+        if (-not (Test-Path $sslBuild)) { mkdir $sslBuild }
+        cd $sslBuild
+        (Get-Content "${sslSrc}\CMakeLists.txt").replace('add_definitions(-Dinline=__inline)', "add_definitions(-Dinline=__inline)`nadd_definitions(-DPATH_MAX=255)") | Set-Content "${sslSrc}\CMakeLists.txt"
+        cmake $sslSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${sslLibDir}" -DCMAKE_BUILD_TYPE="$config"
+        cmake --build . --target install --config "$config"
       }
 
       cd $workingDir
@@ -100,7 +114,7 @@ install:
       cd $workingDir
 
       $ponyWinLibs = "PonyWindowsLibs-LLVM-${llvm}-LibreSSL-${ssl}-PCRE2-${pcre2}.zip"
-      7z a -tzip $ponyWinLibs $libDir
+      7z a -y -tzip $ponyWinLibs $libDir
 
 artifacts:
   - path: 'PonyWindowsLibs*.zip'
