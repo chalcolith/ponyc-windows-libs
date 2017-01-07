@@ -81,7 +81,7 @@ install:
         if (-not (Test-Path $sslBuild)) { mkdir $sslBuild }
         cd $sslBuild
         (Get-Content "${sslSrc}\CMakeLists.txt").replace('add_definitions(-Dinline=__inline)', "add_definitions(-Dinline=__inline)`nadd_definitions(-DPATH_MAX=255)") | Set-Content "${sslSrc}\CMakeLists.txt"
-        cmake $sslSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${sslLibDir}" -DCMAKE_BUILD_TYPE="$config"
+        cmake $sslSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${sslLibDir}"
         cmake --build . --target install --config "$config"
       }
 
@@ -115,7 +115,7 @@ install:
 
       cd $workingDir
 
-      $tag = $Env.APPVEYOR_REPO_TAG
+      $tag = $Env.APPVEYOR_REPO_TAG_NAME
       $ponyWinLibs = "PonyWindowsLibs-LLVM-${llvm}-LibreSSL-${ssl}-PCRE2-${pcre2}-${tag}.zip"
       7z a -y -tzip $ponyWinLibs $libDir
 
@@ -124,6 +124,9 @@ artifacts:
 
 deploy:
   - provider: GitHub
+    description: Windows libraries for building the Pony compiler
+    auth_token:
+      secure: VWcomibzQA0AdttM8KDjvBTfHIoxXkLCzuoWzlV3om8bDO4CpUfu88Q7DltN710l
     artifact: /PonyWindowsLibs.*\.zip/
     draft: false
     prerelease: false
