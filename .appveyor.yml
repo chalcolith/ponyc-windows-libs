@@ -115,7 +115,7 @@ install:
 
       cd $workingDir
 
-      $tag = $env.APPVEYOR_REPO_TAG_NAME
+      $tag = $env:APPVEYOR_REPO_TAG_NAME
       $ponyWinLibs = "PonyWindowsLibs-LLVM-${llvm}-LibreSSL-${ssl}-PCRE2-${pcre2}-${tag}.zip"
       7z a -y -tzip $ponyWinLibs $libDir
 
