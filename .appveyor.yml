@@ -55,8 +55,12 @@ build_script:
         Write-Output "Building LLVM $llvm"
         if (-not (Test-Path $llvmBuild)) { mkdir $llvmBuild }
         cd $llvmBuild
-        cmake $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="$config"
-        cmake --build . --target install --config "$config"
+        
+        cmake $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="Release"
+        cmake --build . --target install --config "Release"
+        
+        cmake $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}-debug" -DCMAKE_BUILD_TYPE="Debug"
+        cmake --build . --target install --config "Debug"
       }
 
       cd $workingDir
