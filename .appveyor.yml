@@ -52,13 +52,18 @@ build_script:
           7z x -y $llvmTar "-o$srcDir"
         }
 
-        Write-Output "Building LLVM $llvm"
+        Write-Output "Building LLVM $llvm Release in $llvmBuild"
         if (-not (Test-Path $llvmBuild)) { mkdir $llvmBuild }
         cd $llvmBuild
         
         cmake $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="Release"
         cmake --build . --target install --config "Release"
-        
+
+        $debugBuild = "$llvmBuild-debug"
+        Write-Output "Building LLVM $llvm Debug in $debugBuild"
+        if (-not (Test-Path $debugBuild)) { mkdir $debugBuild }
+        cd $debugBuild
+
         cmake $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}-debug" -DCMAKE_BUILD_TYPE="Debug"
         cmake --build . --target install --config "Debug"
       }
