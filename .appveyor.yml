@@ -18,6 +18,7 @@ environment:
   - llvm: "3.7.1"
 
 configuration:
+  - Debug
   - Release
 
 build_script:
@@ -52,20 +53,12 @@ build_script:
           7z x -y $llvmTar "-o$srcDir"
         }
 
-        Write-Output "Building LLVM $llvm Release in $llvmBuild"
+        Write-Output "Building LLVM $llvm $config in $llvmBuild"
         if (-not (Test-Path $llvmBuild)) { mkdir $llvmBuild }
         cd $llvmBuild
         
-        cmake $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="Release"
-        cmake --build . --target install --config "Release"
-
-        $debugBuild = "$llvmBuild-debug"
-        Write-Output "Building LLVM $llvm Debug in $debugBuild"
-        if (-not (Test-Path $debugBuild)) { mkdir $debugBuild }
-        cd $debugBuild
-
-        cmake $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}-debug" -DCMAKE_BUILD_TYPE="Debug"
-        cmake --build . --target install --config "Debug"
+        cmake $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="$config"
+        cmake --build . --target install --config "$config"
       }
 
       cd $workingDir
@@ -126,18 +119,18 @@ build_script:
       cd $workingDir
 
       $tag = $env:APPVEYOR_REPO_TAG_NAME
-      $ponyWinLibs = "PonyWindowsLibs-LLVM-${llvm}-LibreSSL-${ssl}-PCRE2-${pcre2}-${tag}.zip"
+      $ponyWinLibs = "PonyWinLibs-LLVM-${llvm}-LibreSSL-${ssl}-PCRE2-${pcre2}-${tag}-${config}.zip"
       7z a -y -tzip $ponyWinLibs $libDir
 
 artifacts:
-  - path: 'PonyWindowsLibs*.zip'
+  - path: 'PonyWinLibs*.zip'
 
 deploy:
   - provider: GitHub
     description: Windows libraries for building the Pony compiler and standard library
     auth_token:
       secure: VWcomibzQA0AdttM8KDjvBTfHIoxXkLCzuoWzlV3om8bDO4CpUfu88Q7DltN710l
-    artifact: /PonyWindowsLibs.*\.zip/
+    artifact: /PonyWinLibs.*\.zip/
     draft: false
     prerelease: false
     on:
