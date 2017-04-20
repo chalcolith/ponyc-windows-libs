@@ -48,7 +48,7 @@ build_script:
           Write-Output "Obtaining LLVM $llvm"
           $llvmTar = "${srcDir}\LLVM-${llvm}.tar"
           $llvmZip = "$llvmTar.xz"
-          if (-not (Test-Path $llvmZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "http://llvm.org/releases/${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
+          if (-not (Test-Path $llvmZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "http://releases.llvm.org/${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
           7z x -y $llvmZip "-o$srcDir"
           7z x -y $llvmTar "-o$srcDir"
         }
