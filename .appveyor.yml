@@ -48,7 +48,7 @@ build_script:
           Write-Output "Obtaining LLVM $llvm"
           $llvmTar = "${srcDir}\LLVM-${llvm}.tar"
           $llvmZip = "$llvmTar.xz"
-          if (-not (Test-Path $llvmZip)) { wget "http://llvm.org/releases/${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
+          if (-not (Test-Path $llvmZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "http://llvm.org/releases/${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
           7z x -y $llvmZip "-o$srcDir"
           7z x -y $llvmTar "-o$srcDir"
         }
@@ -75,7 +75,7 @@ build_script:
         {
           Write-Output "Obtaining LibreSSL ${ssl}"
           $sslZip = "${srcDir}\libressl-${ssl}.tar.gz"
-          if (-not (Test-Path $sslZip)) { wget "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${ssl}.tar.gz" -OutFile $sslZip }
+          if (-not (Test-Path $sslZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${ssl}.tar.gz" -OutFile $sslZip }
           7z x -y $sslZip "-o$srcDir"
           7z x -y "${srcDir}\libressl-${ssl}.tar" "-o$srcDir"
         }
@@ -102,7 +102,7 @@ build_script:
         {
           Write-Output "Obtaining PCRE2 ${pcre2}"
           $pcreZip = "${srcDir}\pcre2-${pcre2}.zip"
-          if (-not (Test-Path $pcreZip)) { wget "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-${pcre2}.zip" -OutFile $pcreZip }
+          if (-not (Test-Path $pcreZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-${pcre2}.zip" -OutFile $pcreZip }
           unzip -o $pcreZip -d $srcDir
         }
 
