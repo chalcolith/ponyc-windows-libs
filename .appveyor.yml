@@ -4,7 +4,7 @@ image: Visual Studio 2015
 
 branches:
   only:
-    - master
+    - release
 
 skip_non_tags: true
 
@@ -27,100 +27,10 @@ build_script:
       $pcre2 = $env:pcre2
       $ssl = $env:ssl
       $llvm = $env:llvm
+      $tag = $env:APPVEYOR_REPO_TAG_NAME
 
       $workingDir = Convert-Path "."
-      $srcDir = "$workingDir\src"
-      $libDir = "$workingDir\lib"
-
-      if (-not (Test-Path $srcDir)) { mkdir $srcDir }
-      if (-not (Test-Path $libDir)) { mkdir $libDir }
-
-      # LLVM
-      $llvmLibDir = "${libDir}\LLVM-${llvm}"
-
-      if (-not (Test-Path $llvmLibDir))
-      {
-        $llvmSrc = "${srcDir}\llvm-${llvm}.src"
-        $llvmBuild = "${srcDir}\llvm-${llvm}.build"
-
-        if (-not (Test-Path $llvmSrc))
-        {
-          Write-Output "Obtaining LLVM $llvm"
-          $llvmTar = "${srcDir}\LLVM-${llvm}.tar"
-          $llvmZip = "$llvmTar.xz"
-          if (-not (Test-Path $llvmZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "http://releases.llvm.org/${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
-          7z x -y $llvmZip "-o$srcDir"
-          7z x -y $llvmTar "-o$srcDir"
-        }
-
-        Write-Output "Building LLVM $llvm $config in $llvmBuild"
-        if (-not (Test-Path $llvmBuild)) { mkdir $llvmBuild }
-        cd $llvmBuild
-        
-        cmake $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="$config"
-        cmake --build . --target install --config "$config"
-      }
-
-      cd $workingDir
-
-      # LibreSSL
-      $sslLibDir = "${libDir}\libressl-${ssl}"
-
-      if (-not (Test-Path $sslLibDir))
-      {
-        $sslSrc = "${srcDir}\libressl-${ssl}"
-        $sslBuild = "${srcDir}\libressl-${ssl}.build"
-
-        if (-not (Test-Path $sslSrc))
-        {
-          Write-Output "Obtaining LibreSSL ${ssl}"
-          $sslZip = "${srcDir}\libressl-${ssl}.tar.gz"
-          if (-not (Test-Path $sslZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-${ssl}.tar.gz" -OutFile $sslZip }
-          7z x -y $sslZip "-o$srcDir"
-          7z x -y "${srcDir}\libressl-${ssl}.tar" "-o$srcDir"
-        }
-
-        Write-Output "Building LibreSSL $ssl"
-        if (-not (Test-Path $sslBuild)) { mkdir $sslBuild }
-        cd $sslBuild
-        (Get-Content "${sslSrc}\CMakeLists.txt").replace('add_definitions(-Dinline=__inline)', "add_definitions(-Dinline=__inline)`nadd_definitions(-DPATH_MAX=255)") | Set-Content "${sslSrc}\CMakeLists.txt"
-        cmake $sslSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${sslLibDir}"
-        cmake --build . --target install --config "$config"
-      }
-
-      cd $workingDir
-
-      # PCRE2
-      $pcreLibDir = "${libDir}\pcre2-${pcre2}"
-
-      if (-not (Test-Path $pcreLibDir))
-      {
-        $pcreSrc = "${srcDir}\pcre2-${pcre2}"
-        $pcreBuild = "${srcDir}\pcre2-${pcre2}.build"
-
-        if (-not (Test-Path $pcreSrc))
-        {
-          Write-Output "Obtaining PCRE2 ${pcre2}"
-          $pcreZip = "${srcDir}\pcre2-${pcre2}.zip"
-          if (-not (Test-Path $pcreZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-${pcre2}.zip" -OutFile $pcreZip }
-          unzip -o $pcreZip -d $srcDir
-        }
-
-        Write-Output "Building PCRE2"
-        if (-not (Test-Path $pcreBuild)) { mkdir $pcreBuild }
-        cd $pcreBuild
-        cmake $pcreSrc -G "Visual Studio 14 2015 Win64"
-        cmake --build . --target pcre2-8 --config "$config"
-
-        mkdir $pcreLibDir
-        copy Release\pcre2-8.lib $pcreLibDir
-      }
-
-      cd $workingDir
-
-      $tag = $env:APPVEYOR_REPO_TAG_NAME
-      $ponyWinLibs = "PonyWinLibs-LLVM-${llvm}-LibreSSL-${ssl}-PCRE2-${pcre2}-${tag}-${config}.zip"
-      7z a -y -tzip $ponyWinLibs $libDir
+      & "$workingDir\build.ps1" -config $config -pcre2 $pcre2 -ssl $ssl -llvm $llvm -workingDir $workingDir -tag $tag
 
 artifacts:
   - path: 'PonyWinLibs*.zip'

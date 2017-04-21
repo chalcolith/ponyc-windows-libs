@@ -1,5 +1,4 @@
-src 
-lib/*lib
-lib/*dll
-lib/*exp
-lib/*pdb
+build/
+build-llvm*/
+*.zip
+*.asc
