@@ -9,7 +9,7 @@ $ssl = "2.5.0"
 
 Push-Location -Path "$PSScriptRoot"
 
-foreach ($llvm in ("4.0.0", "3.9.1", "3.8.1", "3.7.1"))
+foreach ($llvm in ("4.0.1", "3.9.1", "3.8.1", "3.7.1"))
 {
   foreach ($config in ("Debug", "Release"))
   {
