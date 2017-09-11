@@ -16,34 +16,34 @@ if (-not (Test-Path $srcDir)) { mkdir $srcDir }
 if (-not (Test-Path $bldDir)) { mkdir $bldDir }
 if (-not (Test-Path $libDir)) { mkdir $libDir }
 
-# LLVM
-$llvmLibDir = "${libDir}\LLVM-${llvm}-${config}"
+# PCRE2
+$pcreLibDir = "${libDir}\pcre2-${pcre2}"
 
-if (-not (Test-Path $llvmLibDir))
+if (-not (Test-Path $pcreLibDir))
 {
-  $llvmSrc = "${srcDir}\llvm-${llvm}.src"
-  $llvmBuild = "${bldDir}\llvm-${llvm}.build.${config}"
+  $pcreSrc = "${srcDir}\pcre2-${pcre2}"
+  $pcreBuild = "${bldDir}\pcre2-${pcre2}.build"
 
-  if (-not (Test-Path $llvmSrc))
+  if (-not (Test-Path $pcreSrc))
   {
-    Write-Output "Obtaining LLVM $llvm"
-    $llvmTar = "${srcDir}\LLVM-${llvm}.tar"
-    $llvmZip = "$llvmTar.xz"
-    if (-not (Test-Path $llvmZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "http://releases.llvm.org/${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
-    7z.exe x -y $llvmZip "-o$srcDir"
-    if ($LastExitCode -ne 0) { throw "error" }
-    7z.exe x -y $llvmTar "-o$srcDir"
+    Write-Output "Obtaining PCRE2 ${pcre2}"
+    $pcreZip = "${srcDir}\pcre2-${pcre2}.zip"
+    if (-not (Test-Path $pcreZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-${pcre2}.zip" -OutFile $pcreZip }
+    7z.exe x -y $pcreZip "-o$srcDir"
     if ($LastExitCode -ne 0) { throw "error" }
   }
 
-  Write-Output "Building LLVM $llvm $config in $llvmBuild"
-  if (-not (Test-Path $llvmBuild)) { mkdir $llvmBuild }
-  Set-Location -Path $llvmBuild
-  
-  cmake.exe $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="$config" -DCMAKE_CXX_FLAGS="/MP2" -DCMAKE_C_FLAGS="/MP2"
+  Write-Output "Building PCRE2"
+  if (-not (Test-Path $pcreBuild)) { mkdir $pcreBuild }
+  Set-Location -Path $pcreBuild
+
+  cmake.exe $pcreSrc -G "Visual Studio 14 2015 Win64"
   if ($LastExitCode -ne 0) { throw "error" }
-  cmake.exe --build . --target install --config "$config"
+  cmake.exe --build . --target pcre2-8 --config "$config"
   if ($LastExitCode -ne 0) { throw "error" }
+
+  mkdir $pcreLibDir
+  Copy-Item "${config}\pcre2-8*.lib" -Destination $pcreLibDir
 }
 
 Set-Location -Path $workingDir
@@ -80,38 +80,39 @@ if (-not (Test-Path $sslLibDir))
 
 Set-Location -Path $workingDir
 
-# PCRE2
-$pcreLibDir = "${libDir}\pcre2-${pcre2}"
+# LLVM
+$llvmLibDir = "${libDir}\LLVM-${llvm}-${config}"
 
-if (-not (Test-Path $pcreLibDir))
+if (-not (Test-Path $llvmLibDir))
 {
-  $pcreSrc = "${srcDir}\pcre2-${pcre2}"
-  $pcreBuild = "${bldDir}\pcre2-${pcre2}.build"
+  $llvmSrc = "${srcDir}\llvm-${llvm}.src"
+  $llvmBuild = "${bldDir}\llvm-${llvm}.build.${config}"
 
-  if (-not (Test-Path $pcreSrc))
+  if (-not (Test-Path $llvmSrc))
   {
-    Write-Output "Obtaining PCRE2 ${pcre2}"
-    $pcreZip = "${srcDir}\pcre2-${pcre2}.zip"
-    if (-not (Test-Path $pcreZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-${pcre2}.zip" -OutFile $pcreZip }
-    7z.exe x -y $pcreZip "-o$srcDir"
+    Write-Output "Obtaining LLVM $llvm"
+    $llvmTar = "${srcDir}\LLVM-${llvm}.tar"
+    $llvmZip = "$llvmTar.xz"
+    if (-not (Test-Path $llvmZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "http://releases.llvm.org/${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
+    7z.exe x -y $llvmZip "-o$srcDir"
+    if ($LastExitCode -ne 0) { throw "error" }
+    7z.exe x -y $llvmTar "-o$srcDir"
     if ($LastExitCode -ne 0) { throw "error" }
   }
 
-  Write-Output "Building PCRE2"
-  if (-not (Test-Path $pcreBuild)) { mkdir $pcreBuild }
-  Set-Location -Path $pcreBuild
-  
-  cmake.exe $pcreSrc -G "Visual Studio 14 2015 Win64"
-  if ($LastExitCode -ne 0) { throw "error" }
-  cmake.exe --build . --target pcre2-8 --config "$config"
-  if ($LastExitCode -ne 0) { throw "error" }
+  Write-Output "Building LLVM $llvm $config in $llvmBuild"
+  if (-not (Test-Path $llvmBuild)) { mkdir $llvmBuild }
+  Set-Location -Path $llvmBuild
 
-  mkdir $pcreLibDir
-  Copy-Item "${config}\pcre2-8*.lib" -Destination $pcreLibDir
+  cmake.exe $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="$config" -DCMAKE_CXX_FLAGS="/MP2" -DCMAKE_C_FLAGS="/MP2"
+  if ($LastExitCode -ne 0) { throw "error" }
+  cmake.exe --build . --target install --config "$config"
+  if ($LastExitCode -ne 0) { throw "error" }
 }
 
 Set-Location -Path $workingDir
 
+# Zip
 $ponyWinLibs = "PonyWinLibs-LLVM-${llvm}-LibreSSL-${ssl}-PCRE2-${pcre2}-${tag}-${config}.zip"
 7z.exe a -y -tzip $ponyWinLibs $libDir
 if ($LastExitCode -ne 0) { throw "error" }
