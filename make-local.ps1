@@ -1,15 +1,16 @@
 Param (
-  [Parameter(Mandatory=$True)] [string] $tag
-#  ,[Parameter(Mandatory=$True)] [string] $gpgKey
+  [Parameter(Mandatory=$True)] [string] $tag,
+  [Parameter(Mandatory=$True)] [string] $gpgKey,
+  [Parameter(Mandatory=$True)] [string] $gpgPass
 )
 $ErrorActionPreference = "Stop"
 
 $pcre2 = "10.30"
-$ssl = "2.6.1"
+$ssl = "2.6.4"
 
 Push-Location -Path "$PSScriptRoot"
 
-foreach ($llvm in ("5.0.0", "4.0.1", "3.9.1", "3.8.1", "3.7.1"))
+foreach ($llvm in ("5.0.1", "4.0.1", "3.9.1"))
 {
   foreach ($config in ("Debug", "Release"))
   {
@@ -29,10 +30,7 @@ foreach ($llvm in ("5.0.0", "4.0.1", "3.9.1", "3.8.1", "3.7.1"))
 }
 
 Set-Location -Path "$PSScriptRoot"
-# Get-ChildItem "$PSScriptRoot" -Filter *.zip |
-# Foreach-Object
-# {
-#   gpg.exe -u "$gpgKey" --armor --detach-sig $_.FullName
-# }
-
-# Pop-Location
+Get-ChildItem "$packageDir" -Filter *.zip | Foreach-Object
+{
+  gpg.exe -u "$gpgKey" --passphrase "$gpgPass" --armor --detach-sig $_.FullName
+}
