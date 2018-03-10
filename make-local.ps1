@@ -5,12 +5,12 @@ Param (
 )
 $ErrorActionPreference = "Stop"
 
-$pcre2 = "10.30"
+$pcre2 = "10.31"
 $ssl = "2.6.4"
 
 Push-Location -Path "$PSScriptRoot"
 
-foreach ($llvm in ("5.0.1", "4.0.1", "3.9.1"))
+foreach ($llvm in ("6.0.0", "5.0.1", "4.0.1", "3.9.1"))
 {
   foreach ($config in ("Debug", "Release"))
   {
@@ -30,7 +30,7 @@ foreach ($llvm in ("5.0.1", "4.0.1", "3.9.1"))
 }
 
 Set-Location -Path "$PSScriptRoot"
-Get-ChildItem "$packageDir" -Filter *.zip | Foreach-Object
-{
-  gpg.exe -u "$gpgKey" --passphrase "$gpgPass" --armor --detach-sig $_.FullName
-}
+# Get-ChildItem "$packageDir" -Filter *.zip | Foreach-Object
+# {
+#   gpg.exe -u "$gpgKey" --passphrase "$gpgPass" --armor --detach-sig $_.FullName
+# }
