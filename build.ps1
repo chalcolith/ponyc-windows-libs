@@ -4,7 +4,7 @@ Param (
   [Parameter(Mandatory=$True)] [string] $ssl,
   [Parameter(Mandatory=$True)] [string] $llvm,
   [Parameter(Mandatory=$True)] [string] $workingDir,
-  [Parameter(Mandatory=$True)] [string] $tag
+  [Parameter(Mandatory=$True)] [string] $tag # e.g. v1.8.0
 )
 $ErrorActionPreference = "Stop"
 
@@ -28,7 +28,7 @@ if (-not (Test-Path $pcreLibDir))
   {
     Write-Output "Obtaining PCRE2 ${pcre2}"
     $pcreZip = "${srcDir}\pcre2-${pcre2}.zip"
-    if (-not (Test-Path $pcreZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre2-${pcre2}.zip" -OutFile $pcreZip }
+    if (-not (Test-Path $pcreZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "https://ftp.pcre.org/pub/pcre/pcre2-${pcre2}.zip" -OutFile $pcreZip }
     7z.exe x -y $pcreZip "-o$srcDir"
     if ($LastExitCode -ne 0) { throw "error" }
   }
@@ -72,7 +72,7 @@ if (-not (Test-Path $sslLibDir))
   Set-Location -Path $sslBuild
   (Get-Content "${sslSrc}\CMakeLists.txt").replace('add_definitions(-Dinline=__inline)', "add_definitions(-Dinline=__inline)`nadd_definitions(-DPATH_MAX=255)") | Set-Content "${sslSrc}\CMakeLists.txt"
 
-  cmake.exe $sslSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${sslLibDir}"
+  cmake.exe $sslSrc -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="${sslLibDir}"
   if ($LastExitCode -ne 0) { throw "error" }
   cmake.exe --build . --target install --config "$config"
   if ($LastExitCode -ne 0) { throw "error" }

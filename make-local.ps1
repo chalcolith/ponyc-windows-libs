@@ -1,16 +1,16 @@
 Param (
-  [Parameter(Mandatory=$True)] [string] $tag,
-  [Parameter(Mandatory=$True)] [string] $gpgKey,
-  [Parameter(Mandatory=$True)] [string] $gpgPass
+  [Parameter(Mandatory=$True)] [string] $tag # e.g. v1.8.0
+  #[Parameter(Mandatory=$True)] [string] $gpgKey,
+  #[Parameter(Mandatory=$True)] [string] $gpgPass,
 )
 $ErrorActionPreference = "Stop"
 
-$pcre2 = "10.31"
-$ssl = "2.6.4"
+$pcre2 = "10.32"
+$ssl = "2.8.1"
 
 Push-Location -Path "$PSScriptRoot"
 
-foreach ($llvm in ("6.0.0", "5.0.1", "4.0.1", "3.9.1"))
+foreach ($llvm in ("7.0.0", "6.0.1", "3.9.1"))
 {
   foreach ($config in ("Debug", "Release"))
   {
