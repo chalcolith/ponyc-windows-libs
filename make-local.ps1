@@ -6,11 +6,11 @@ Param (
 $ErrorActionPreference = "Stop"
 
 $pcre2 = "10.32"
-$ssl = "2.8.1"
+$ssl = "2.9.0"
 
 Push-Location -Path "$PSScriptRoot"
 
-foreach ($llvm in ("7.0.0", "6.0.1", "3.9.1"))
+foreach ($llvm in ("7.0.1", "6.0.1", "3.9.1"))
 {
   foreach ($config in ("Debug", "Release"))
   {
