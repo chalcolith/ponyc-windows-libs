@@ -2,14 +2,14 @@
 
 Contains Appveyor configuration for building libraries needed for building Pony on Windows.
 
-The release files are signed with the following GPG key: 
+The release files are signed with the following GPG key:
 
 ```
-0x22EEE656 Gordon Tisher <gordon@balafon.net>
+0xADF3B00307F6ACFA Gordon Tisher <gordon@balafon.net>
 ```
 
-Fingerprint `7698 88C0 235A 8A75 08BB  A531 06FF 7498 22EE E656`.  You can import this key via `keys.gnupg.net`: 
+Fingerprint `5D34 26DA 8064 4A97 31AB  73B3 ADF3 B003 07F6 ACFA`.  You can import this key via `gpg`:
 
 ```
-gpg --keyserver keys.gnupg.net --recv-keys 22EEE656
+gpg --recv-keys ADF3B00307F6ACFA
 ```
