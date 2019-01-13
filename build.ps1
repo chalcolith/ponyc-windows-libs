@@ -37,7 +37,7 @@ if (-not (Test-Path $pcreLibDir))
   if (-not (Test-Path $pcreBuild)) { mkdir $pcreBuild }
   Set-Location -Path $pcreBuild
 
-  cmake.exe $pcreSrc -G "Visual Studio 14 2015 Win64"
+  cmake.exe $pcreSrc -G "Visual Studio 15 2017 Win64" -Thost=x64
   if ($LastExitCode -ne 0) { throw "error" }
   cmake.exe --build . --target pcre2-8 --config "$config"
   if ($LastExitCode -ne 0) { throw "error" }
@@ -72,7 +72,7 @@ if (-not (Test-Path $sslLibDir))
   Set-Location -Path $sslBuild
   (Get-Content "${sslSrc}\CMakeLists.txt").replace('add_definitions(-Dinline=__inline)', "add_definitions(-Dinline=__inline)`nadd_definitions(-DPATH_MAX=255)") | Set-Content "${sslSrc}\CMakeLists.txt"
 
-  cmake.exe $sslSrc -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="${sslLibDir}"
+  cmake.exe $sslSrc -G "Visual Studio 15 2017 Win64" -Thost=x64 -DCMAKE_INSTALL_PREFIX="${sslLibDir}"
   if ($LastExitCode -ne 0) { throw "error" }
   cmake.exe --build . --target install --config "$config"
   if ($LastExitCode -ne 0) { throw "error" }
@@ -104,7 +104,7 @@ if (-not (Test-Path $llvmLibDir))
   if (-not (Test-Path $llvmBuild)) { mkdir $llvmBuild }
   Set-Location -Path $llvmBuild
 
-  cmake.exe $llvmSrc -G "Visual Studio 14 2015 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="$config" -DCMAKE_CXX_FLAGS="/MP2" -DCMAKE_C_FLAGS="/MP2"
+  cmake.exe $llvmSrc -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="$config" -DCMAKE_CXX_FLAGS="/MP2" -DCMAKE_C_FLAGS="/MP2" -Thost=x64
   if ($LastExitCode -ne 0) { throw "error" }
   cmake.exe --build . --target install --config "$config"
   if ($LastExitCode -ne 0) { throw "error" }
