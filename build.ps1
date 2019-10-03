@@ -93,7 +93,8 @@ if (-not (Test-Path $llvmLibDir))
     Write-Output "Obtaining LLVM $llvm"
     $llvmTar = "${srcDir}\LLVM-${llvm}.tar"
     $llvmZip = "$llvmTar.xz"
-    if (-not (Test-Path $llvmZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "http://releases.llvm.org/${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
+    # https://github.com/llvm/llvm-project/releases/download/llvmorg-8.0.1/llvm-8.0.1.src.tar.xz
+    if (-not (Test-Path $llvmZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
     7z.exe x -y $llvmZip "-o$srcDir"
     if ($LastExitCode -ne 0) { throw "error" }
     7z.exe x -y $llvmTar "-o$srcDir"
