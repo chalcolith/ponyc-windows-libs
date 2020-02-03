@@ -37,7 +37,7 @@ if (-not (Test-Path $pcreLibDir))
   if (-not (Test-Path $pcreBuild)) { mkdir $pcreBuild }
   Set-Location -Path $pcreBuild
 
-  cmake.exe $pcreSrc -G "Visual Studio 15 2017 Win64" -Thost=x64
+  cmake.exe $pcreSrc -G "Visual Studio 16 2019" -Thost=x64 -A x64
   if ($LastExitCode -ne 0) { throw "error" }
   cmake.exe --build . --target pcre2-8 --config "$config"
   if ($LastExitCode -ne 0) { throw "error" }
@@ -72,7 +72,7 @@ if (-not (Test-Path $sslLibDir))
   Set-Location -Path $sslBuild
   (Get-Content "${sslSrc}\CMakeLists.txt").replace('add_definitions(-Dinline=__inline)', "add_definitions(-Dinline=__inline)`nadd_definitions(-DPATH_MAX=255)") | Set-Content "${sslSrc}\CMakeLists.txt"
 
-  cmake.exe $sslSrc -G "Visual Studio 15 2017 Win64" -Thost=x64 -DCMAKE_INSTALL_PREFIX="${sslLibDir}"
+  cmake.exe $sslSrc -G "Visual Studio 16 2019" -Thost=x64 -A x64 -DCMAKE_INSTALL_PREFIX="${sslLibDir}"
   if ($LastExitCode -ne 0) { throw "error" }
   cmake.exe --build . --target install --config "$config"
   if ($LastExitCode -ne 0) { throw "error" }
@@ -93,7 +93,6 @@ if (-not (Test-Path $llvmLibDir))
     Write-Output "Obtaining LLVM $llvm"
     $llvmTar = "${srcDir}\LLVM-${llvm}.tar"
     $llvmZip = "$llvmTar.xz"
-    # https://github.com/llvm/llvm-project/releases/download/llvmorg-8.0.1/llvm-8.0.1.src.tar.xz
     if (-not (Test-Path $llvmZip)) { Invoke-WebRequest -TimeoutSec 300 -Uri "https://github.com/llvm/llvm-project/releases/download/llvmorg-${llvm}/llvm-${llvm}.src.tar.xz" -OutFile $llvmZip }
     7z.exe x -y $llvmZip "-o$srcDir"
     if ($LastExitCode -ne 0) { throw "error" }
@@ -105,7 +104,7 @@ if (-not (Test-Path $llvmLibDir))
   if (-not (Test-Path $llvmBuild)) { mkdir $llvmBuild }
   Set-Location -Path $llvmBuild
 
-  cmake.exe $llvmSrc -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="$config" -DCMAKE_CXX_FLAGS="/MP2" -DCMAKE_C_FLAGS="/MP2" -Thost=x64
+  cmake.exe $llvmSrc -G "Visual Studio 16 2019" -DCMAKE_INSTALL_PREFIX="${llvmLibDir}" -DCMAKE_BUILD_TYPE="$config" -DCMAKE_CXX_FLAGS="/MP2" -DCMAKE_C_FLAGS="/MP2" -Thost=x64 -A x64
   if ($LastExitCode -ne 0) { throw "error" }
   cmake.exe --build . --target install --config "$config"
   if ($LastExitCode -ne 0) { throw "error" }
